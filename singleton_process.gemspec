@@ -8,12 +8,14 @@ Gem::Specification.new do |gem|
   gem.version       = SingletonProcess::VERSION
   gem.authors       = ["Robert Jackson"]
   gem.email         = ["robert.w.jackson@me.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
-  gem.homepage      = ""
+  gem.description   = %q{Ensure that a given process is only running once. Helpful for ensure that scheduled tasks do not overlap if they run longer than the scheduled interval.}
+  gem.summary       = %q{Ensure that a given process is only running once.}
+  gem.homepage      = "https://github.com/rjackson/singleton_process"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
+
+  gem.add_development_dependency 'rspec', '~>2.12.0'
 end
