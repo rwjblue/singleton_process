@@ -137,7 +137,7 @@ describe SingletonProcess do
           initial_process.start
 
           start_time = Time.now
-          while Time.now - start_time < 5
+          while Time.now - start_time < 15
             break if pidfile_path.exist?
             sleep 0.01
           end
@@ -146,7 +146,7 @@ describe SingletonProcess do
           second_process.start
 
           begin
-            second_process.poll_for_exit(5)
+            second_process.poll_for_exit(15)
           rescue ChildProcess::TimeoutError
             raise "Child process didn't exit properly."
           end
