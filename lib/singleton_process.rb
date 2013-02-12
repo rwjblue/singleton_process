@@ -3,7 +3,7 @@ require 'pathname'
 class SingletonProcess
   class AlreadyRunningError < RuntimeError; end
 
-  VERSION = '0.0.1'
+  VERSION = '0.0.2'
 
   attr_accessor :name, :root_path, :app_name
   private :name=
