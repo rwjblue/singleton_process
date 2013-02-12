@@ -60,7 +60,7 @@ describe SingletonProcess do
     end
   end
 
-  describe "lock" do
+  describe "#lock" do
     let(:expected_error) {SingletonProcess::AlreadyRunningError}
 
     context "when it is not already running" do
@@ -184,7 +184,7 @@ describe SingletonProcess do
 
   describe "#running?" do
     context "when the pid file exists" do
-      let(:pidfile) {pidfile_path.open('r')}
+      let(:pidfile) {pidfile_path.open('a')}
 
       before do
         write_random_pid

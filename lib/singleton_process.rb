@@ -46,15 +46,15 @@ class SingletonProcess
 
   def running?
     if pidfile_path.exist?
-      pidfile = pidfile_path.open('r')
-      !pidfile.flock(File::LOCK_EX | File::LOCK_NB)
+      local_pidfile = pidfile_path.open('a')
+      !local_pidfile.flock(File::LOCK_EX | File::LOCK_NB)
     else
       false
     end
   ensure
-    if pidfile
-      pidfile.flock(File::LOCK_UN)
-      pidfile.close
+    if local_pidfile
+      local_pidfile.flock(File::LOCK_UN)
+      local_pidfile.close
     end
   end
 
