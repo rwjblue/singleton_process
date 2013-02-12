@@ -3,7 +3,9 @@ require 'pathname'
 class SingletonProcess
   class AlreadyRunningError < RuntimeError; end
 
-  VERSION = '0.0.3'
+  unless defined? VERSION
+    VERSION = File.read(File.expand_path('singleton_process/VERSION', File.dirname(__FILE__)))
+  end
 
   attr_accessor :name, :root_path, :app_name
   private :name=

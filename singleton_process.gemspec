@@ -1,11 +1,10 @@
 # -*- encoding: utf-8 -*-
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'singleton_process'
 
 Gem::Specification.new do |gem|
   gem.name          = "singleton_process"
-  gem.version       = SingletonProcess::VERSION
+  gem.version       = File.read(File.join(lib, 'singleton_process','VERSION'))
   gem.authors       = ["Robert Jackson"]
   gem.email         = ["robert.w.jackson@me.com"]
   gem.description   = %q{Ensure that a given process is only running once. Helpful for ensure that scheduled tasks do not overlap if they run longer than the scheduled interval.}
