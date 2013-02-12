@@ -1,4 +1,5 @@
 require 'timeout'
+require 'tempfile'
 require 'spec_helper'
 
 require_relative '../lib/singleton_process'
@@ -103,20 +104,37 @@ describe SingletonProcess do
           ]
         end
 
-        before do
-          require 'open3'
-          require 'io/wait'
+        let(:initial_process_output)  {Tempfile.new('output')}
+        let(:initial_process) do
+          process = ChildProcess.build(*spawn_command)
+          process.io.stderr = process.io.stdout = initial_process_output
+          process
+        end
+
+        let(:second_process_output)  {Tempfile.new('output')}
+        let(:second_process) do
+          process = ChildProcess.build(*spawn_command)
+          process.io.stderr = process.io.stdout = second_process_output
+          process
+        end
+
+        before :all do
+          require 'childprocess'
+          #ChildProcess.posix_spawn = true
         end
 
         after do
-          Process.kill(:KILL, @pid1) rescue nil
-          Process.kill(:KILL, @pid2) rescue nil
+          initial_process.stop
+          second_process.stop
+
+          initial_process_output.close
+          second_process_output.close
         end
 
         it "should raise an error." do
           pidfile_path.exist?.should be_false
-          stdin1, stdout1, stderr1, wait_thr1 = Open3.popen3(*spawn_command)
-          @pid1 = wait_thr1[:pid]
+
+          initial_process.start
 
           start_time = Time.now
           while Time.now - start_time < 5
@@ -125,31 +143,29 @@ describe SingletonProcess do
           end
           pidfile_path.exist?.should be_true
 
-          stdin2, stdout2, stderr2, wait_thr2 = Open3.popen3(*spawn_command)
-          @pid2 = wait_thr2[:pid]
+          second_process.start
 
           begin
-            exit_status = Timeout.timeout(5) { wait_thr2.value }
+            second_process.poll_for_exit(5)
+          rescue ChildProcess::TimeoutError
+            raise "Child process didn't exit properly."
+          end
+
+          second_process_output.rewind
+          second_process_output.read.should match(/AlreadyRunningError/)
+          second_process.crashed?.should be_true
+
+          Process.kill(:INT, initial_process.pid)
+
+          begin
+            initial_process.poll_for_exit(5)
           rescue Timeout::Error
             raise "Child process didn't exit properly."
           end
 
-          stderr2.read.should match(/AlreadyRunningError/)
-          exit_status.success?.should be_false
-
-          stdin2.close; stdout2.close; stderr2.close
-
-          Process.kill(:INT, @pid1)
-
-          begin
-            exit_status = Timeout.timeout(5) { wait_thr1.value }
-          rescue Timeout::Error
-            raise "Child process didn't exit properly."
-          end
-
-          stdout1.read.should eql("#{successful_output}\n")
-          stdin1.close; stdout1.close; stderr1.close
-          exit_status.success?.should be_true
+          initial_process_output.rewind
+          initial_process_output.read.should eql("#{successful_output}\n")
+          initial_process.exit_code.should eql(0)
         end
       end
     end
