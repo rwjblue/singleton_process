@@ -119,7 +119,7 @@ describe SingletonProcess do
           @pid1 = wait_thr1[:pid]
 
           start_time = Time.now
-          while Time.now - start_time < 1
+          while Time.now - start_time < 5
             break if pidfile_path.exist?
             sleep 0.01
           end
