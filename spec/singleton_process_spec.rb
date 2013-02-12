@@ -2,7 +2,7 @@ require 'timeout'
 require 'tempfile'
 require 'spec_helper'
 
-require_relative '../lib/singleton_process'
+require File.join(File.dirname(__FILE__), '../lib/singleton_process')
 
 describe SingletonProcess do
   let(:random_pid)   { rand(99999)}
@@ -31,12 +31,12 @@ describe SingletonProcess do
     end
 
     it "should accept a root_path." do
-      instance = described_class.new(process_name, root_path: tmp_pathname)
+      instance = described_class.new(process_name, :root_path => tmp_pathname)
       instance.root_path.should eql(tmp_pathname)
     end
 
     it "should convert root_path to a Pathname." do
-      instance = described_class.new(process_name, root_path: '/tmp')
+      instance = described_class.new(process_name, :root_path => '/tmp')
       instance.root_path.should eql(tmp_pathname)
     end
 
@@ -47,7 +47,7 @@ describe SingletonProcess do
     end
 
     it "should accept and save an application name." do
-      instance = described_class.new(process_name, app_name: 'blah')
+      instance = described_class.new(process_name, :app_name => 'blah')
       instance.app_name.should eql('blah')
     end
   end
