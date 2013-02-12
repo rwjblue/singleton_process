@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/rjackson/singleton_process.png)](https://travis-ci.org/rjackson/singleton_process)
+
 # SingletonProcess
 
 Ensure that a given process is only running once. Helpful for ensure that scheduled tasks do not overlap if they run longer than the scheduled interval.
@@ -5,6 +7,14 @@ Ensure that a given process is only running once. Helpful for ensure that schedu
 Prior attempts simply used a pid file, and checked if the process specified was still running (by calling `Process.kill(0, pid)`), but 
 since the system reuses PID's you can get false positives.  This project uses a locked pid file to ensure that the process is truly still 
 running. So basically, if the file is locked the process is still running.
+
+## Supported Rubies
+
+This process is currently tested in nearly every ruby version supported by Travis-CI
+
+* MRI versions 1.8.7, 1.9.2, 1.9.3, 2.0.0
+* JRuby running in either 1.8 or 1.9 mode
+* Rubinius running in either 1.8 or 1.9 mode
 
 ## Installation
 
