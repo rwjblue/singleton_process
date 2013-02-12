@@ -28,6 +28,12 @@ The basic usage is quite simple: just supply a process name (will show up in `ps
 SingletonProcess.new('long_running_process').lock
 ```
 
+If you just want to exit if you can't lock call `#lock_or_exit`
+
+```ruby
+SingletonProcess.new('long_running_process').lock_or_exit # will call Kernel.exit if it is already running.
+```
+
 By default the lock file will be removed when the process exits, but if you need to clear the lock earlier you can call #unlock.
 
 ```ruby

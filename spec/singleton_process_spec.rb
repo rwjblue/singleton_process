@@ -171,6 +171,24 @@ describe SingletonProcess do
     end
   end
 
+  describe "#lock_or_exit" do
+    context "when it is not already running" do
+      it "should be running." do
+        singleton.lock
+        singleton.pid.should eql(Process.pid)
+      end
+    end
+
+    context "when it is already running" do
+      it "should call exit." do
+        instance1 = described_class.new(process_name)
+        instance1.lock
+
+        expect{singleton.lock_or_exit}.to raise_error(SystemExit)
+      end
+    end
+  end
+
   describe "run!" do
     it "should yield." do
       ran = false

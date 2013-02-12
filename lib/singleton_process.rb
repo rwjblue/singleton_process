@@ -3,7 +3,7 @@ require 'pathname'
 class SingletonProcess
   class AlreadyRunningError < RuntimeError; end
 
-  VERSION = '0.0.2'
+  VERSION = '0.0.3'
 
   attr_accessor :name, :root_path, :app_name
   private :name=
@@ -31,6 +31,12 @@ class SingletonProcess
     write_pidfile
     at_exit { delete_pidfile }
     $0 = "#{app_name} | #{name} | started #{Time.now}"
+  end
+
+  def lock_or_exit
+    lock
+  rescue AlreadyRunningError
+    exit
   end
 
   def run!
