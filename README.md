@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/rjackson/singleton_process.png)](https://travis-ci.org/rjackson/singleton_process)
+[![Code Climate](https://codeclimate.com/github/rjackson/singleton_process.png)](https://codeclimate.com/github/rjackson/singleton_process)
 
 # SingletonProcess
 
