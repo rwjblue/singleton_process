@@ -73,7 +73,7 @@ class SingletonProcess
   private
 
   def pidfile
-    @pidfile ||= pidfile_path.open('a')
+    @pidfile ||= pidfile_path.open(File::RDWR|File::CREAT)
   end
 
   def write_pidfile

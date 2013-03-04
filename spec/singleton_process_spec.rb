@@ -1,6 +1,7 @@
 require 'timeout'
 require 'tempfile'
 require 'spec_helper'
+require 'childprocess'
 
 require File.join(File.dirname(__FILE__), '../lib/singleton_process')
 
@@ -9,13 +10,25 @@ describe SingletonProcess do
   let(:process_name) {'testing'}
   let(:pidfile_path) {Pathname.new("tmp/pids/#{process_name}.pid")}
 
+  let(:spawn_command) do
+    [ File.join(*RbConfig::CONFIG.values_at('bindir', 'RUBY_INSTALL_NAME')),
+      "-I", File.expand_path("../../lib", __FILE__),
+      "-r", "singleton_process",
+      "-e", """
+          trap(:INT) {puts '#{successful_output}'; exit;};
+          SingletonProcess.new('#{process_name}').lock;
+          while true; sleep 0.01; end;
+        """
+    ]
+  end
+
   before do
     @original_name = $PROGRAM_NAME
   end
 
   after do
     $PROGRAM_NAME = @original_name
-    singleton.pidfile_path.unlink if singleton.pidfile_path.exist?
+    singleton.send(:delete_pidfile)
   end
 
   def write_random_pid
@@ -92,18 +105,6 @@ describe SingletonProcess do
         let(:successful_output) {'Ran successfully!'}
         let(:process_name) {'spawn_test'}
 
-        let(:spawn_command) do
-          [ File.join(*RbConfig::CONFIG.values_at('bindir', 'RUBY_INSTALL_NAME')),
-            "-I", File.expand_path("../../lib", __FILE__),
-            "-r", "singleton_process",
-            "-e", """
-                trap(:INT) {puts '#{successful_output}'; exit;};
-                SingletonProcess.new('#{process_name}').lock;
-                while true; sleep 0.01; end;
-              """
-          ]
-        end
-
         let(:initial_process_output)  {Tempfile.new('output')}
         let(:initial_process) do
           process = ChildProcess.build(*spawn_command)
@@ -116,11 +117,6 @@ describe SingletonProcess do
           process = ChildProcess.build(*spawn_command)
           process.io.stderr = process.io.stdout = second_process_output
           process
-        end
-
-        before :all do
-          require 'childprocess'
-          #ChildProcess.posix_spawn = true
         end
 
         after do
