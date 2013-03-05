@@ -8,7 +8,8 @@ require File.join(File.dirname(__FILE__), '../lib/singleton_process')
 describe SingletonProcess do
   let(:random_pid)   { rand(99999)}
   let(:process_name) {'testing'}
-  let(:pidfile_path) {Pathname.new("tmp/pids/#{process_name}.pid")}
+  let(:pidfile_dir)  {Pathname.new('tmp/pids')}
+  let(:pidfile_path) {"#{pidfile_dir.join(process_name)}.pid")}
 
   let(:spawn_command) do
     [ File.join(*RbConfig::CONFIG.values_at('bindir', 'RUBY_INSTALL_NAME')),
@@ -20,6 +21,10 @@ describe SingletonProcess do
           while true; sleep 0.01; end;
         """
     ]
+  end
+
+  before :all do
+    pidfile_dir.mkpath
   end
 
   before do
